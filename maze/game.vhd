@@ -5,17 +5,21 @@ use ieee.math_real.all;
 
 entity GAME is
   port(
+    -- Inputs for Paddle 1
     L1 : in std_logic;
     R1 : in std_logic;
     U1 : in std_logic;
     D1 : in std_logic;
     
+    -- Inputs for Paddle 2
     L2 : in std_logic;
     R2 : in std_logic;
     U2 : in std_logic;
     D2 : in std_logic;
     
     tick    : in std_logic;
+    -- Assigning unsigned variables for the paddle
+    -- positions
     paddle_position_x_1 : out unsigned (9 downto 0);
     paddle_position_y_1 : out unsigned (9 downto 0);
     paddle_position_x_2 : out unsigned (9 downto 0);
@@ -23,7 +27,9 @@ entity GAME is
   );
 end;
 
+  -- game architecture
 architecture synth of GAME is
+  -- assigning the signals
   signal paddlex1     : unsigned (14 downto 0);
   signal paddley1     : unsigned (14 downto 0);
   signal paddlex2     : unsigned (14 downto 0);
@@ -45,7 +51,7 @@ begin
     if rising_edge(tick) then
       little_count <= little_count + 1;
       
-      -- PADDLE MOVES
+      -- PADDLE MOVE segment
       if little_count = 0 then
         big_count <= big_count + 1;
         paddlex1 <= (paddlex1 + 1) when (L1 = '1' and R1 = '0') and paddlex1 < 14000 else
@@ -61,7 +67,7 @@ begin
                     (paddley2 - 1) when (U2 = '0' and D2 = '1') and paddley2 > 6500  else
                     paddley2;
         
-        -- BALL MOVES
+        
         if big_count = 0 then		    
           
           if once = '0' then -- This happens once
@@ -72,6 +78,7 @@ begin
             paddley2     <= 15d"5200";
           end if;
           
+          -- keeping paddles in bounds 
           if paddlex1 = 14000 or paddlex1 = 6500 or paddley1 = 5000 or
             (paddlex1 > 9600 and paddlex1 < 9920 and paddley1 < 6400 and paddley1 > 4800) --1
             
